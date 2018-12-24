@@ -1,0 +1,6 @@
+/data/*.log {
+    hourly
+    rotate 2
+    size 10M
+    missingok
+}
