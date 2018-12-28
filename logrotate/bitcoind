@@ -1,6 +1,8 @@
 /data/*.log {
-    hourly
     rotate 2
-    size 10M
+    daily
     missingok
+    size 1M
+    notifempty
+    copytruncate
 }
