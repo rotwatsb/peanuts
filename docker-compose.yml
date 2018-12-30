@@ -1,0 +1,22 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - RPC_USER
+      - RPC_PASSWORD
+      - FLASK_APP=app
+      - FLASK_ENV=development
+  bitcoin:
+    image: "rotwatsb/bitcoin-service:latest"
+    ports:
+      - "8333:8333"
+    environment:
+      - RPC_USER
+      - RPC_PASSWORD
+    volumes:
+      - peanuts:/data
+volumes:
+  peanuts:

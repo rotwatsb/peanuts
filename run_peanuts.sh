@@ -1,36 +1,9 @@
-#! /bin/bash
+#!/bin/bash
 
-# Start the first process
-bitcoind -datadir=/data -prune=551 -daemon -rpcuser=$RPC_USER -rpcpassword=$RPC_PASSWORD
-status=$?
-if [ $status -ne 0 ]; then
-  echo "Failed to start bitcoind: $status"
-  exit $status
-fi
+# run as: ./run_peanuts.sh RPC_USER RPC_PASSWORD
+RPC_USER=$1
+RPC_PASSWORD=$2
 
-# Start the second process
-flask run --host=0.0.0.0
-status=$?
-if [ $status -ne 0 ]; then
-  echo "Failed to start flask: $status"
-  exit $status
-fi
+export RPC_USER RPC_PASSWORD
 
-# Naive check runs checks once a minute to see if either of the processes exited.
-# This illustrates part of the heavy lifting you need to do if you want to run
-# more than one service in a container. The container exits with an error
-# if it detects that either of the processes has exited.
-# Otherwise it loops forever, waking up every 60 seconds
-
-while sleep 60; do
-  ps aux |grep bitcoind |grep -q -v grep
-  BITCOIND_STATUS=$?
-  ps aux |grep flask |grep -q -v grep
-  FLASK_STATUS=$?
-  # If the greps above find anything, they exit with 0 status
-  # If they are not both 0, then something is wrong
-  if [ $BITCOIND_STATUS -ne 0 -o $FLASK_STATUS -ne 0 ]; then
-    echo "One of the processes has already exited."
-    exit 1
-  fi
-done
+docker-compose up

@@ -4,4 +4,4 @@
 RPCU=RPC_USER=$2
 RPCP=RPC_PASSWORD=$3
 
-docker run --mount source=peanuts,target=/data -e $RPCU -e $RPCP -e FLASK_APP=app -e FLASK_ENV=development -p 5000:5000 $1
+docker run -e FLASK_APP=app -e FLASK_ENV=development -p 5000:5000 $1
