@@ -1,14 +1,14 @@
 version: "3"
 services:
   web:
-    build: .
+    image: "rotwatsb/peanuts:latest"
     ports:
       - "5000:5000"
     environment:
       - RPC_USER
       - RPC_PASSWORD
       - FLASK_APP=app
-      - FLASK_ENV=development
+      - FLASK_ENV
   bitcoin:
     image: "rotwatsb/bitcoin-service:latest"
     ports:
@@ -20,3 +20,6 @@ services:
       - peanuts:/data
 volumes:
   peanuts:
+    driver: rexray/ebs
+    driver_opts:
+      size: 250
