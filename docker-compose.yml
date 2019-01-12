@@ -1,6 +1,6 @@
 version: "3"
 services:
-  web:
+  peanuts-app:
     image: "rotwatsb/peanuts:latest"
     ports:
       - "5000:5000"
@@ -9,17 +9,17 @@ services:
       - RPC_PASSWORD
       - FLASK_APP=app
       - FLASK_ENV
-  bitcoin:
+      - BITCOIN_CONTAINER
+  peanuts-bitcoin-service:
     image: "rotwatsb/bitcoin-service:latest"
     ports:
       - "8333:8333"
     environment:
+      - ALLOWED_CONTAINER
       - RPC_USER
       - RPC_PASSWORD
     volumes:
-      - peanuts:/data
+      - peanuts-volume:/data
 volumes:
-  peanuts:
-    driver: rexray/ebs
-    driver_opts:
-      size: 250
+  peanuts-volume:
+    driver: local
