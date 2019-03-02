@@ -7,19 +7,6 @@ services:
     environment:
       - RPC_USER
       - RPC_PASSWORD
+      - RPC_BITCOIN_HOST
       - FLASK_APP=app
       - FLASK_ENV
-      - BITCOIN_CONTAINER
-  peanuts-bitcoin-service:
-    image: "rotwatsb/bitcoin-service:latest"
-    ports:
-      - "8333:8333"
-    environment:
-      - ALLOWED_CONTAINER
-      - RPC_USER
-      - RPC_PASSWORD
-    volumes:
-      - peanuts-volume:/data
-volumes:
-  peanuts-volume:
-    driver: local
