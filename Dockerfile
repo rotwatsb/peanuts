@@ -4,14 +4,14 @@ EXPOSE 5000
 
 RUN apt-get update && apt-get -qy install software-properties-common
 
-RUN pip install python-bitcoinrpc Flask
-
 RUN mkdir /project
 
 WORKDIR /project
 
 COPY . .
 
+RUN pip install pipenv && pipenv install --ignore-pipfile
+
 RUN chown -R root .
 
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["pipenv", "run", "flask", "run", "--host=0.0.0.0", "--port=5000"]

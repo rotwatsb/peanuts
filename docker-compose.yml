@@ -1,12 +1,30 @@
 version: "3"
 services:
   peanuts-app:
-    image: "rotwatsb/peanuts:latest"
+    build: .
+    networks:
+      - peanuts-network
     ports:
       - "5000:5000"
     environment:
       - RPC_USER
       - RPC_PASSWORD
       - RPC_BITCOIN_HOST
-      - FLASK_APP=app
       - FLASK_ENV
+  bitcoin-service:
+    image: "rotwatsb/bitcoin-service:latest"
+    networks:
+      - peanuts-network
+    ports:
+      - "8333:8333"
+    environment:
+      - RPC_USER
+      - RPC_PASSWORD
+      - RPC_CLIENT_HOST
+    volumes:
+      - peanuts-bitcoin:/data
+volumes:
+  peanuts-bitcoin:
+networks:
+  peanuts-network:
+    driver: bridge
