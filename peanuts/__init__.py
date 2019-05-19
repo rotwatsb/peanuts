@@ -1,5 +1,5 @@
 import os
-from app.views import bitcoin
+from peanuts.views import bitcoin
 
 from flask import Flask
 
@@ -8,7 +8,7 @@ def create_app():
     # __name__ is the name of the current Python module
     # instance_relative_config tells the app that configuration files are relative to the
     # instance folder
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
 
     # SECRET_KEY is used to securely sign session cookies
     app.config.from_mapping(
