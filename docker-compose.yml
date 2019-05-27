@@ -2,6 +2,8 @@ version: "3"
 services:
   peanuts-app:
     build: .
+    depends_on:
+      - bitcoin-service
     networks:
       - peanuts-network
     ports:
@@ -10,7 +12,7 @@ services:
       - RPC_USER
       - RPC_PASSWORD
       - RPC_BITCOIN_HOST
-      - FLASK_ENV
+    command: ["bash", "/project/docker/run_tests.sh"]
   bitcoin-service:
     image: "rotwatsb/bitcoin-service:latest"
     networks:

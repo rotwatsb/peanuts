@@ -1,13 +1,17 @@
+from flask import url_for
+
 import pytest
+import urllib2
 
 import peanuts
 
 @pytest.fixture
-def client():
-    app = peanuts.create_app();
-    app.testing = True
-    return app.test_client();
+def app():
+    return peanuts.create_app()
 
-def test_rpc_connection(client):
-    rv = client.get('/bitcoin')
-    assert rv.status_code == 200
+@pytest.mark.usefixtures('live_server')
+class TestLiveServer:
+    def test_rpc_connection(self):
+        res = urllib2.urlopen(url_for('bitcoin.index', _external=True))
+        assert res.code == 200
+        assert ('merkleroot' in res.read()) == True
