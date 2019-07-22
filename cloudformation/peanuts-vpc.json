@@ -1,0 +1,329 @@
+{
+    "Parameters" : {
+        "AllowedSSHCidr" : {
+            "Type" : "String",
+            "Description" : "Enter the IP/32 that will be allowed ssh access :"
+        }
+    },
+    "Resources" : {
+        "peanutsVpc" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock" : "10.0.0.0/16",
+                "EnableDnsHostnames" : "false",
+                "EnableDnsSupport" : "true",
+                "InstanceTenancy" : "default"
+            }
+        },
+        "peanutsSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "GroupDescription" : "Allow http, ssh, and bitcoin traffic",
+                "VpcId" : { "Ref" : "peanutsVpc" },
+                "SecurityGroupIngress" : [
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 80,
+                        "ToPort" : 80,
+                        "CidrIp" : "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 80,
+                        "ToPort" : 80,
+                        "CidrIpv6" : "::/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 8333,
+                        "ToPort" : 8333,
+                        "CidrIp" : "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 8333,
+                        "ToPort" : 8333,
+                        "CidrIpv6" : "::/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 22,
+                        "ToPort" : 22,
+                        "CidrIp" : { "Ref" : "AllowedSSHCidr" }
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 5000,
+                        "ToPort" : 5000,
+                        "CidrIp" : "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 5000,
+                        "ToPort" : 5000,
+                        "CidrIpv6" : "::/0"
+                    }
+                ]
+            }
+        },
+        "peanutsGateway" : {
+            "Type" : "AWS::EC2::InternetGateway"
+        },
+        "peanutsGatewayAttachment" : {
+            "Type" : "AWS::EC2::VPCGatewayAttachment",
+            "DependsOn" : [
+                "peanutsVpc",
+                "peanutsGateway"
+            ],
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" },
+                "InternetGatewayId" : { "Ref" : "peanutsGateway" }
+            }
+        },
+        "peanutsPublicPrimary" : {
+            "Type" : "AWS::EC2::Subnet",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" },
+                "CidrBlock" : "10.0.0.0/24",
+                "AvailabilityZone" : "us-east-2a"
+            }
+        },
+        "peanutsPublicPrimaryTable" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" }
+            }
+        },
+        "peanutsPublicPrimaryAssociation" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "DependsOn" : [
+                "peanutsPublicPrimary",
+                "peanutsPublicPrimaryTable"
+            ],
+            "Properties" : {
+                "SubnetId" : { "Ref" : "peanutsPublicPrimary" },
+                "RouteTableId" : { "Ref" : "peanutsPublicPrimaryTable" }
+            }
+        },
+        "peanutsPublicSecondary" : {
+            "Type" : "AWS::EC2::Subnet",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" },
+                "CidrBlock" : "10.0.128.0/24",
+                "AvailabilityZone" : "us-east-2b"
+            }
+        },
+        "peanutsPublicSecondaryTable" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" }
+            }
+        },
+        "peanutsPublicSecondaryAssociation" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "DependsOn" : [
+                "peanutsPublicSecondary",
+                "peanutsPublicSecondaryTable"
+            ],
+            "Properties" : {
+                "SubnetId" : { "Ref" : "peanutsPublicSecondary" },
+                "RouteTableId" : { "Ref" : "peanutsPublicSecondaryTable" }
+            }
+        },
+        "peanutsPrivatePrimary" : {
+            "Type" : "AWS::EC2::Subnet",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" },
+                "CidrBlock" : "10.0.1.0/24",
+                "AvailabilityZone" : "us-east-2a"
+            }
+        },
+        "peanutsPrivatePrimaryTable" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" }
+            }
+        },
+        "peanutsPrivatePrimaryAssociation" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "DependsOn" : [
+                "peanutsPrivatePrimary",
+                "peanutsPrivatePrimaryTable"
+            ],
+            "Properties" : {
+                "SubnetId" : { "Ref" : "peanutsPrivatePrimary" },
+                "RouteTableId" : { "Ref" : "peanutsPrivatePrimaryTable" }
+            }
+        },
+        "peanutsPrivateSecondary" : {
+            "Type" : "AWS::EC2::Subnet",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" },
+                "CidrBlock" : "10.0.129.0/24",
+                "AvailabilityZone" : "us-east-2b"
+            }
+        },
+        "peanutsPrivateSecondaryTable" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "VpcId" : { "Ref" : "peanutsVpc" }
+            }
+        },
+        "peanutsPrivateSecondaryAssociation" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "DependsOn" : [
+                "peanutsPrivateSecondary",
+                "peanutsPrivateSecondaryTable"
+            ],
+            "Properties" : {
+                "SubnetId" : { "Ref" : "peanutsPrivateSecondary" },
+                "RouteTableId" : { "Ref" : "peanutsPrivateSecondaryTable" }
+            }
+        },
+        "peanutsPrimaryGatewayRoute" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : [
+                "peanutsGatewayAttachment",
+                "peanutsPublicPrimaryAssociation"
+            ],
+            "Properties" : {
+                "RouteTableId" : { "Ref" : "peanutsPublicPrimaryTable" },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "GatewayId" : { "Ref" : "peanutsGateway" }
+            }
+        },
+        "peanutsSecondaryGatewayRoute" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : [
+                "peanutsGatewayAttachment",
+                "peanutsPublicSecondaryAssociation"
+            ],
+            "Properties" : {
+                "RouteTableId" : { "Ref" : "peanutsPublicSecondaryTable" },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "GatewayId" : { "Ref" : "peanutsGateway" }
+            }
+        },
+        "peanutsPrimaryEip" : {
+            "Type" : "AWS::EC2::EIP",
+            "DependsOn" : "peanutsGatewayAttachment",
+            "Properties" : {
+                "Domain" : "vpc"
+            }
+        },
+        "peanutsSecondaryEip" : {
+            "Type" : "AWS::EC2::EIP",
+            "DependsOn" : "peanutsGatewayAttachment",
+            "Properties" : {
+                "Domain" : "vpc"
+            }
+        },
+        "peanutsPrimaryNat" : {
+            "Type" : "AWS::EC2::NatGateway",
+            "DependsOn" : [
+                "peanutsPublicPrimary",
+                "peanutsPrimaryEip"
+            ],
+            "Properties" : {
+                "AllocationId" : {
+                    "Fn::GetAtt" : [
+                        "peanutsPrimaryEip",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId" : { "Ref" : "peanutsPublicPrimary" }
+            }
+        },
+        "peanutsSecondaryNat" : {
+            "Type" : "AWS::EC2::NatGateway",
+            "DependsOn" : [
+                "peanutsPublicSecondary",
+                "peanutsSecondaryEip"
+            ],
+            "Properties" : {
+                "AllocationId" : {
+                    "Fn::GetAtt" : [
+                        "peanutsSecondaryEip",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId" : { "Ref" : "peanutsPublicSecondary" }
+            }
+        },
+        "peanutsPrimaryNatRoute" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : [
+                "peanutsPrimaryNat",
+                "peanutsPrivatePrimaryTable"
+            ],
+            "Properties" : {
+                "RouteTableId" : { "Ref" : "peanutsPrivatePrimaryTable" },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "NatGatewayId" : { "Ref" : "peanutsPrimaryNat" }
+            }
+        },
+        "peanutsSecondaryNatRoute" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : [
+                "peanutsSecondaryNat",
+                "peanutsPrivateSecondaryTable"
+            ],
+            "Properties" : {
+                "RouteTableId" : { "Ref" : "peanutsPrivateSecondaryTable" },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "NatGatewayId" : { "Ref" : "peanutsSecondaryNat" }
+            }
+        }
+    },
+    "Outputs" : {
+        "VpcId" : {
+            "Value" : {
+                "Ref" : "peanutsVpc"
+            }
+        },
+        "SecurityGroupId" : {
+            "Value" : {
+                "Ref" : "peanutsSecurityGroup"
+            }
+        },
+        "PublicSubnetIds" : {
+            "Value" : {
+                "Fn::Join" : [
+                    ",",
+                    [
+                        {
+                            "Ref" : "peanutsPublicPrimary"
+                        },
+                        {
+                            "Ref" : "peanutsPublicSecondary"
+                        }
+                    ]
+                ]
+            }
+        },
+        "PrivateSubnetIds" : {
+            "Value" : {
+                "Fn::Join" : [
+                    ",",
+                    [
+                        {
+                            "Ref" : "peanutsPrivatePrimary"
+                        },
+                        {
+                            "Ref" : "peanutsPrivateSecondary"
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+}
