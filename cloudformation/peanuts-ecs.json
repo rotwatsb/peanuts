@@ -34,7 +34,7 @@
                 "IamInstanceProfile": "arn:aws:iam::139008324031:instance-profile/role-ecs-instance-peanuts",
                 "EbsOptimized" : false,
                 "KeyName" : "rotwatsb-key-pair-useast2",
-                "AssociatePublicIpAddress" : true,
+                "AssociatePublicIpAddress" : false,
                 "BlockDeviceMappings" : [
                     {
                         "DeviceName" : "/dev/xvda",
@@ -301,7 +301,7 @@
                 },
                 "DesiredCount" : 1,
                 "LaunchType" : "EC2",
-                "HealthCheckGracePeriodSeconds" : 300,
+                "HealthCheckGracePeriodSeconds" : 5,
                 "LoadBalancers" : [
                     {
                         "ContainerName" : "peanutsApp",
@@ -315,7 +315,12 @@
                     "AwsvpcConfiguration" : {
                         "Subnets" : {
                             "Ref" : "PrivateSubnetIds"
-                        }
+                        },
+                        "SecurityGroups" : [
+                            {
+                                "Ref" : "SecurityGroupId"
+                            }
+                        ]
                     }
                 }
             }
