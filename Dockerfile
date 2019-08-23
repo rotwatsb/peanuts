@@ -1,4 +1,4 @@
-FROM python:2.7-stretch
+FROM python:3.6-stretch
 
 EXPOSE 5000
 
