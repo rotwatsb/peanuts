@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/rotwatsb/peanuts/issues"
   },
-  "homepage": "https://github.com/rotwatsb/peanuts#readme"
+  "homepage": "https://github.com/rotwatsb/peanuts#readme",
+  "devDependencies": {
+    "bower": "^1.8.8"
+  }
 }
