@@ -1,0 +1,18 @@
+{
+    "name": "peanuts",
+    "description": "great with hot sauce",
+    "main": "index.js",
+    "authors": [
+        "Steve Bradley"
+    ],
+    "license": "ISC",
+    "homepage": "https://github.com/rotwatsb/peanuts",
+    "private": true,
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
+}

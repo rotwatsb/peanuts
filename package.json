@@ -1,25 +1,26 @@
 {
-  "name": "peanuts",
-  "version": "1.0.0",
-  "description": "great with hot sauce",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rotwatsb/peanuts.git"
-  },
-  "author": "Steve Bradley",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/rotwatsb/peanuts/issues"
-  },
-  "homepage": "https://github.com/rotwatsb/peanuts#readme",
-  "devDependencies": {
-    "bower": "^1.8.8"
-  }
+    "name": "peanuts",
+    "version": "1.0.0",
+    "description": "great with hot sauce",
+    "main": "index.js",
+    "directories": {
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "bower": "bower"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rotwatsb/peanuts.git"
+    },
+    "author": "Steve Bradley",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/rotwatsb/peanuts/issues"
+    },
+    "homepage": "https://github.com/rotwatsb/peanuts#readme",
+    "devDependencies": {
+        "bower": "^1.8.8"
+    }
 }
