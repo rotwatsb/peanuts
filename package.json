@@ -20,5 +20,14 @@
         "url": "https://github.com/rotwatsb/peanuts/issues"
     },
     "homepage": "https://github.com/rotwatsb/peanuts#readme",
-    "devDependencies": {}
+    "devDependencies": {
+        "@babel/core": "^7.6.0",
+        "@babel/preset-env": "^7.6.0",
+        "@babel/preset-react": "^7.0.0",
+        "babel-loader": "^8.0.6",
+        "react": "^16.9.0",
+        "react-dom": "^16.9.0",
+        "webpack": "^4.40.2",
+        "webpack-cli": "^3.3.9"
+    }
 }
