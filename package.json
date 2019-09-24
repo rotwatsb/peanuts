@@ -2,13 +2,13 @@
     "name": "peanuts",
     "version": "1.0.0",
     "description": "great with hot sauce",
-    "main": "index.js",
+    "private": true,
     "directories": {
         "test": "tests"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "bower": "bower"
+        "build-bundle": "webpack --mode production"
     },
     "repository": {
         "type": "git",
