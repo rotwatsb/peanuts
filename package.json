@@ -1,0 +1,33 @@
+{
+    "name": "peanuts",
+    "version": "1.0.0",
+    "description": "great with hot sauce",
+    "private": true,
+    "directories": {
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build-bundle": "webpack --mode production"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rotwatsb/peanuts.git"
+    },
+    "author": "Steve Bradley",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/rotwatsb/peanuts/issues"
+    },
+    "homepage": "https://github.com/rotwatsb/peanuts#readme",
+    "devDependencies": {
+        "@babel/core": "^7.6.0",
+        "@babel/preset-env": "^7.6.0",
+        "@babel/preset-react": "^7.0.0",
+        "babel-loader": "^8.0.6",
+        "react": "^16.9.0",
+        "react-dom": "^16.9.0",
+        "webpack": "^4.40.2",
+        "webpack-cli": "^3.3.9"
+    }
+}
