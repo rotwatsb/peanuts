@@ -14,4 +14,6 @@ RUN export PIPENV_VENV_IN_PROJECT=true && pip install pipenv && pipenv install -
 
 RUN groupadd peanuts && useradd --no-log-init -r -g peanuts peanuts && chown -R peanuts peanuts
 
-CMD ["pipenv", "run", "python", "run_peanuts_wsgi.py"]
+RUN su - peanuts
+
+CMD ["su", "-c", "pipenv", "run", "python", "run_peanuts_wsgi.py", "peanuts"]
