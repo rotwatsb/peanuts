@@ -16,4 +16,4 @@ RUN groupadd peanuts && useradd --no-log-init -r -g peanuts peanuts && chown -R 
 
 RUN su - peanuts
 
-CMD ["su", "-c", "pipenv", "run", "python", "run_peanuts_wsgi.py", "peanuts"]
+CMD ["su", "-c", "pipenv run python run_peanuts_wsgi.py", "peanuts"]
