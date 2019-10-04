@@ -1,70 +1,12 @@
 {
-    "Parameters" : {
-        "AllowedSSHCidr" : {
-            "Type" : "String",
-            "Description" : "Enter the IP/32 that will be allowed ssh access :"
-        }
-    },
     "Resources" : {
         "peanutsVpc" : {
             "Type" : "AWS::EC2::VPC",
             "Properties": {
                 "CidrBlock" : "10.0.0.0/16",
-                "EnableDnsHostnames" : "false",
+                "EnableDnsHostnames" : "true",
                 "EnableDnsSupport" : "true",
                 "InstanceTenancy" : "default"
-            }
-        },
-        "peanutsSecurityGroup" : {
-            "Type" : "AWS::EC2::SecurityGroup",
-            "DependsOn" : "peanutsVpc",
-            "Properties" : {
-                "GroupDescription" : "Allow http, ssh, and bitcoin traffic",
-                "VpcId" : { "Ref" : "peanutsVpc" },
-                "SecurityGroupIngress" : [
-                    {
-                        "IpProtocol" : "tcp",
-                        "FromPort" : 80,
-                        "ToPort" : 80,
-                        "CidrIp" : "0.0.0.0/0"
-                    },
-                    {
-                        "IpProtocol" : "tcp",
-                        "FromPort" : 80,
-                        "ToPort" : 80,
-                        "CidrIpv6" : "::/0"
-                    },
-                    {
-                        "IpProtocol" : "tcp",
-                        "FromPort" : 8333,
-                        "ToPort" : 8333,
-                        "CidrIp" : "0.0.0.0/0"
-                    },
-                    {
-                        "IpProtocol" : "tcp",
-                        "FromPort" : 8333,
-                        "ToPort" : 8333,
-                        "CidrIpv6" : "::/0"
-                    },
-                    {
-                        "IpProtocol" : "tcp",
-                        "FromPort" : 22,
-                        "ToPort" : 22,
-                        "CidrIp" : { "Ref" : "AllowedSSHCidr" }
-                    },
-                    {
-                        "IpProtocol" : "tcp",
-                        "FromPort" : 5000,
-                        "ToPort" : 5000,
-                        "CidrIp" : "0.0.0.0/0"
-                    },
-                    {
-                        "IpProtocol" : "tcp",
-                        "FromPort" : 5000,
-                        "ToPort" : 5000,
-                        "CidrIpv6" : "::/0"
-                    }
-                ]
             }
         },
         "peanutsGateway" : {
@@ -282,17 +224,43 @@
                 "DestinationCidrBlock" : "0.0.0.0/0",
                 "NatGatewayId" : { "Ref" : "peanutsSecondaryNat" }
             }
+        },
+        "peanutsPrivateDnsNamespace" : {
+            "Type" : "AWS::ServiceDiscovery::PrivateDnsNamespace",
+            "DependsOn" : "peanutsVpc",
+            "Properties" : {
+                "Description" : "Private peanuts dns namespace",
+                "Name" : "private-peanuts.net",
+                "Vpc" : {
+                    "Ref" : "peanutsVpc"
+                }
+            }
+        },
+        "peanutsECSCluster" : {
+            "Type" : "AWS::ECS::Cluster"
+        },
+        "peanutsCloudwatchLogsGroup" : {
+            "Type" : "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join" : [
+                        "-",
+                        [
+                            "peanutsECSLogGroup",
+                            {
+                                "Ref" : "AWS::StackName"
+                            }
+                        ]
+                    ]
+                },
+                "RetentionInDays": 14
+            }
         }
     },
     "Outputs" : {
         "VpcId" : {
             "Value" : {
                 "Ref" : "peanutsVpc"
-            }
-        },
-        "SecurityGroupId" : {
-            "Value" : {
-                "Ref" : "peanutsSecurityGroup"
             }
         },
         "PublicSubnetIds" : {
@@ -323,6 +291,21 @@
                         }
                     ]
                 ]
+            }
+        },
+        "PrivateDnsNamespaceId" : {
+            "Value" : {
+                "Ref" : "peanutsPrivateDnsNamespace"
+            }
+        },
+        "ECSClusterName" : {
+            "Value" : {
+                "Ref" : "peanutsECSCluster"
+            }
+        },
+        "CloudwatchLogsGroupName" : {
+            "Value" : {
+                "Ref" : "peanutsCloudwatchLogsGroup"
             }
         }
     }
