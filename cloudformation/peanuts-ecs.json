@@ -4,9 +4,9 @@
             "Type" : "AWS::EC2::VPC::Id",
             "Description":"Select a VPC that allows instances to access the Internet."
         },
-        "SecurityGroupId" : {
-            "Type" : "AWS::EC2::SecurityGroup::Id",
-            "Description" : "Select the security group"
+        "AllowedSSHCidr" : {
+            "Type" : "String",
+            "Description" : "Enter the IP/32 that will be allowed ssh access :"
         },
         "PublicSubnetIds" : {
             "Type" : "List<AWS::EC2::Subnet::Id>",
@@ -15,11 +15,70 @@
         "PrivateSubnetIds" : {
             "Type" : "List<AWS::EC2::Subnet::Id>",
             "Description" : "Select at least two subnets in your selected VPC."
+        },
+        "PrivateDnsNamespaceId" : {
+            "Type" : "String"
+        },
+        "ECSClusterName" : {
+            "Type" : "String"
+        },
+        "CloudwatchLogsGroupName" : {
+            "Type" : "String"
         }
     },
     "Resources" : {
-        "peanutsECSCluster" : {
-            "Type" : "AWS::ECS::Cluster"
+        "peanutsSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Allow http and ssh from bastion",
+                "VpcId" : {
+                    "Ref" : "VpcId"
+                },
+                "SecurityGroupIngress" : [
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 80,
+                        "ToPort" : 80,
+                        "CidrIp" : "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 80,
+                        "ToPort" : 80,
+                        "CidrIpv6" : "::/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 8333,
+                        "ToPort" : 8333,
+                        "CidrIp" : "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 8333,
+                        "ToPort" : 8333,
+                        "CidrIpv6" : "::/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 22,
+                        "ToPort" : 22,
+                        "CidrIp" : { "Ref" : "AllowedSSHCidr" }
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 5000,
+                        "ToPort" : 5000,
+                        "CidrIp" : "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 5000,
+                        "ToPort" : 5000,
+                        "CidrIpv6" : "::/0"
+                    }
+                ]
+            }
         },
         "peanutsContainerInstances" : {
             "Type" : "AWS::AutoScaling::LaunchConfiguration",
@@ -27,7 +86,7 @@
                 "ImageId" : "ami-0fbc9fff39b859770",
                 "SecurityGroups" : [
                     {
-                        "Ref" : "SecurityGroupId"
+                        "Ref" : "peanutsSecurityGroup"
                     }
                 ],
                 "InstanceType" : "t2.micro",
@@ -54,7 +113,7 @@
                                 "#!/bin/bash -xe\n",
                                 "echo ECS_CLUSTER=",
                                 {
-                                    "Ref" : "peanutsECSCluster"
+                                    "Ref" : "ECSClusterName"
                                 },
                                 " >> /etc/ecs/ecs.config\n",
                                 "yum install -y aws-cfn-bootstrap\n",
@@ -65,7 +124,6 @@
                                 },
                                 "         --resource peanutsECSAutoScalingGroup ",
                                 "         --region us-east-2\n",
-                                "docker plugin install rexray/ebs REXRAY_PREEMPT=true EBS_REGION=us-east-2 --grant-all-permissions\n"
                             ]
                         ]
                     }
@@ -96,92 +154,13 @@
                 }
             }
         },
-        "peanutsCloudwatchLogsGroup" : {
-            "Type" : "AWS::Logs::LogGroup",
-            "Properties": {
-                "LogGroupName": {
-                    "Fn::Join" : [
-                        "-",
-                        [
-                            "peanutsECSLogGroup",
-                            {
-                                "Ref" : "AWS::StackName"
-                            }
-                        ]
-                    ]
-                },
-                "RetentionInDays": 14
-            }
-        },
         "peanutsTaskDefinition" : {
             "Type" : "AWS::ECS::TaskDefinition",
             "Properties" : {
                 "ExecutionRoleArn" : "arn:aws:iam::139008324031:role/role-task-execution-peanuts",
                 "NetworkMode" : "awsvpc",
                 "TaskRoleArn":  "arn:aws:iam::139008324031:role/role-task-peanuts",
-                "Volumes" : [
-                    {
-                        "Name" : "peanuts-bitcoin-volume",
-                        "DockerVolumeConfiguration" : {
-                            "Autoprovision" : true,
-                            "Driver" : "rexray/ebs",
-                            "Scope" : "shared",
-                            "DriverOpts" : {
-                                "VolumeType": "gp2",
-                                "Size": "10"
-                            }
-                        }
-                    }
-                ],
                 "ContainerDefinitions" : [
-                    {
-                        "Name" : "peanutsBitcoin",
-                        "Image" : "rotwatsb/bitcoin-service:latest",
-                        "Cpu" : 0,
-                        "MemoryReservation" : 500,
-                        "Essential" : true,
-                        "LogConfiguration" : {
-                            "LogDriver" : "awslogs",
-                            "Options" : {
-                                "awslogs-group" : {
-                                    "Ref" : "peanutsCloudwatchLogsGroup"
-                                },
-                                "awslogs-region" : "us-east-2",
-                                "awslogs-stream-prefix" : "peanuts-bitcoin"
-                            }
-                        },
-                        "ReadonlyRootFilesystem" : false,
-                        "MountPoints" : [
-                            {
-                                "ContainerPath" : "/data",
-                                "SourceVolume" : "peanuts-bitcoin-volume",
-                                "ReadOnly" : false
-                            }
-                        ],
-                        "Environment" : [
-                            {
-                                "Name" : "RPC_CLIENT_HOST",
-                                "Value" : "localhost"
-                            }
-                        ],
-                        "Secrets" : [
-                            {
-                                "Name" : "RPC_PASSWORD",
-                                "ValueFrom" : "arn:aws:ssm:us-east-2:139008324031:parameter/BITCOIN_RPC_PW"
-                            },
-                            {
-                                "Name" : "RPC_USER",
-                                "ValueFrom" : "arn:aws:ssm:us-east-2:139008324031:parameter/BITCOIN_RPC_USER"
-                            }
-                        ],
-                        "PortMappings" : [
-                            {
-                                "ContainerPort" : 8333,
-                                "HostPort" : 8333,
-                                "Protocol" : "tcp"
-                            }
-                        ]
-                    },
                     {
                         "Name" : "peanutsApp",
                         "Image" : "rotwatsb/peanuts",
@@ -192,7 +171,7 @@
                             "LogDriver" : "awslogs",
                             "Options" : {
                                 "awslogs-group" : {
-                                    "Ref" : "peanutsCloudwatchLogsGroup"
+                                    "Ref" : "CloudwatchLogsGroupName"
                                 },
                                 "awslogs-region" : "us-east-2",
                                 "awslogs-stream-prefix" : "peanuts-app"
@@ -202,7 +181,7 @@
                         "Environment" : [
                             {
                                 "Name" : "RPC_BITCOIN_HOST",
-                                "Value" : "localhost"
+                                "Value" : "bitcoind.private-peanuts.net"
                             },
                             {
                                 "Name" : "FLASK_APP",
@@ -246,7 +225,7 @@
                 },
                 "SecurityGroups" : [
                     {
-                        "Ref" : "SecurityGroupId"
+                        "Ref" : "peanutsSecurityGroup"
                     }
                 ],
                 "Type" : "application"
@@ -289,12 +268,31 @@
                 "Protocol" : "HTTP"
             }
         },
+        "peanutsServiceDiscoveryService" : {
+            "Type" : "AWS::ServiceDiscovery::Service",
+            "Properties" : {
+                "Description" : "Private peanuts app discovery service",
+                "DnsConfig" : {
+                    "DnsRecords" : [
+                        {
+                            "Type" : "A",
+                            "TTL" : 60
+                        }
+                    ],
+                    "RoutingPolicy" : "WEIGHTED"
+                },
+                "Name" : "peanuts",
+                "NamespaceId" : {
+                    "Ref" : "PrivateDnsNamespaceId"
+                }
+            }
+        },
         "peanutsECSService" : {
             "Type" : "AWS::ECS::Service",
             "DependsOn" : "peanutsALBListener",
             "Properties" : {
                 "Cluster" : {
-                    "Ref" : "peanutsECSCluster"
+                    "Ref" : "ECSClusterName"
                 },
                 "TaskDefinition" : {
                     "Ref" : "peanutsTaskDefinition"
@@ -318,11 +316,21 @@
                         },
                         "SecurityGroups" : [
                             {
-                                "Ref" : "SecurityGroupId"
+                                "Ref" : "peanutsSecurityGroup"
                             }
                         ]
                     }
-                }
+                },
+                "ServiceRegistries" : [
+                    {
+                        "RegistryArn" : {
+                            "Fn::GetAtt" : [
+                                "peanutsServiceDiscoveryService",
+                                "Arn"
+                            ]
+                        }
+                    }
+                ]
             }
         },
         "peanutsAutoscalingRole" : {
@@ -378,7 +386,7 @@
                         [
                             "service/",
                             {
-                                "Ref" : "peanutsECSCluster"
+                                "Ref" : "ECSClusterName"
                             },
                             "/",
                             {
@@ -402,4 +410,3 @@
         }
     }
 }
-
