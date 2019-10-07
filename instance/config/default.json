@@ -1,3 +1,6 @@
 {
-    "SOMETHING": "something"
+    "BTCWRAPP": {
+        "DOMAIN": "btcwrapp.private-peanuts.net",
+        "PORT": 8000
+    }
 }

@@ -1,7 +1,5 @@
-import os
-from peanuts.views import bitcoin
-
-from flask import Flask
+import os, requests
+from flask import Flask, render_template
 
 def create_app():
     # create and configure the app
@@ -18,11 +16,33 @@ def create_app():
     app.config.from_json('config/default.json')
     app.config.from_json('config/' + app.config['ENV'] + '.json')
 
-    app.register_blueprint(bitcoin.bp)
-
     # a simple page that says hello
     @app.route('/hello')
     def hello():
         return 'Hello, World!'
+
+    # a temporary endpoint to test the microservices architecture
+    @app.route('/bitcoin')
+    def bitcoin():
+        info = requests.get(
+            "http://%s:%s/bitcoin" %(
+                app.config['BTCWRAPP']['DOMAIN'],
+                app.config['BTCWRAPP']['PORT']
+            )
+        )
+
+        return render_template('bitcoin/index.html', info=info)
+
+    # a temporary endpoint to test the microservices architecture
+    @app.route('/bitcoin/best-block')
+    def bestblock():
+        info = requests.get(
+            "http://%s:%s/bitcoin/best-block" %(
+                app.config['BTCWRAPP']['DOMAIN'],
+                app.config['BTCWRAPP']['PORT']
+            )
+        )
+
+        return render_template('bitcoin/index.html', info=info)
 
     return app
