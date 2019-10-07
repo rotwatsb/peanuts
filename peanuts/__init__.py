@@ -29,7 +29,7 @@ def create_app():
                 app.config['BTCWRAPP']['DOMAIN'],
                 app.config['BTCWRAPP']['PORT']
             )
-        )
+        ).json()
 
         return render_template('bitcoin/index.html', info=info)
 
@@ -41,7 +41,7 @@ def create_app():
                 app.config['BTCWRAPP']['DOMAIN'],
                 app.config['BTCWRAPP']['PORT']
             )
-        )
+        ).json()
 
         return render_template('bitcoin/index.html', info=info)
 
