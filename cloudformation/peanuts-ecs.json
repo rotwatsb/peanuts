@@ -27,7 +27,7 @@
         }
     },
     "Resources" : {
-        "peanutsSecurityGroup" : {
+        "peanutsAppSecurityGroup" : {
             "Type" : "AWS::EC2::SecurityGroup",
             "Properties" : {
                 "GroupDescription" : "Allow http and ssh from bastion",
@@ -56,13 +56,36 @@
                 ]
             }
         },
+        "peanutsALBSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Allow http connections",
+                "VpcId" : {
+                    "Ref" : "VpcId"
+                },
+                "SecurityGroupIngress" : [
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 80,
+                        "ToPort" : 80,
+                        "CidrIp" : "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : 80,
+                        "ToPort" : 80,
+                        "CidrIpv6" : "::/0"
+                    }
+                ]
+            }
+        },
         "peanutsContainerInstances" : {
             "Type" : "AWS::AutoScaling::LaunchConfiguration",
             "Properties" : {
                 "ImageId" : "ami-0fbc9fff39b859770",
                 "SecurityGroups" : [
                     {
-                        "Ref" : "peanutsSecurityGroup"
+                        "Ref" : "peanutsAppSecurityGroup"
                     }
                 ],
                 "InstanceType" : "t2.micro",
@@ -197,7 +220,7 @@
                 },
                 "SecurityGroups" : [
                     {
-                        "Ref" : "peanutsSecurityGroup"
+                        "Ref" : "peanutsALBSecurityGroup"
                     }
                 ],
                 "Type" : "application"
@@ -288,7 +311,7 @@
                         },
                         "SecurityGroups" : [
                             {
-                                "Ref" : "peanutsSecurityGroup"
+                                "Ref" : "peanutsAppSecurityGroup"
                             }
                         ]
                     }
