@@ -1,5 +1,6 @@
 import os, requests
 from flask import Flask, render_template
+from myce import api_client
 
 def create_app():
     # create and configure the app
@@ -21,27 +22,19 @@ def create_app():
     def hello():
         return 'Hello, World!'
 
+    client = api_client.create()
+
     # a temporary endpoint to test the microservices architecture
     @app.route('/bitcoin')
     def bitcoin():
-        info = requests.get(
-            "http://%s:%s/bitcoin" %(
-                app.config['BTCWRAPP']['DOMAIN'],
-                app.config['BTCWRAPP']['PORT']
-            )
-        ).json()
+        info = client.blockchain.get_info().json()
 
         return render_template('bitcoin/index.html', info=info)
 
     # a temporary endpoint to test the microservices architecture
     @app.route('/bitcoin/best-block')
     def bestblock():
-        info = requests.get(
-            "http://%s:%s/bitcoin/best-block" %(
-                app.config['BTCWRAPP']['DOMAIN'],
-                app.config['BTCWRAPP']['PORT']
-            )
-        ).json()
+        info = client.block.get_best_block().json()
 
         return render_template('bitcoin/index.html', info=info)
 
