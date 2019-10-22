@@ -11,7 +11,8 @@ pytest-flask = "*"
 requests = "*"
 flask = "*"
 waitress = "*"
-myce = {editable = true,git = "git://github.com/rotwatsb/myce.git",ref = "master"}
+config2 = "*"
+myce = {editable = true,git = "git://github.com/rotwatsb/myce",ref = "081ecaa7e63d3d55f1aec3388a7efbede823941f"}
 
 [requires]
 python_version = "3.6"

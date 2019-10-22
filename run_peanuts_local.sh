@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export FLASK_APP=peanuts
+export ENV=development
 export RPC_USER=localdev
 export RPC_PASSWORD=localdev
 

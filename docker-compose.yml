@@ -3,19 +3,30 @@ services:
   peanuts-app:
     build: .
     depends_on:
-      - bitcoin-service
+      - btcwrapp
     networks:
-      - peanuts-network
+      - test-network
     ports:
       - "5000:5000"
     environment:
+      - ENV
+    command: ["bash", "/project/docker/run_tests.sh"]
+  btcwrapp:
+    image: "rotwatsb/btcwrapp:latest"
+    depends_on:
+      - bitcoin-service
+    networks:
+      - test-network
+    ports:
+      - "8000:8000"
+    environment:
       - RPC_USER
       - RPC_PASSWORD
-    command: ["bash", "/project/docker/run_tests.sh"]
+      - ENV
   bitcoin-service:
     image: "rotwatsb/bitcoin-service:latest"
     networks:
-      - peanuts-network
+      - test-network
     ports:
       - "8333:8333"
     environment:
@@ -23,9 +34,9 @@ services:
       - RPC_PASSWORD
       - RPC_CLIENT_HOST
     volumes:
-      - peanuts-bitcoin:/data
+      - bitcoindata:/data
 volumes:
-  peanuts-bitcoin:
+  bitcoindata:
 networks:
-  peanuts-network:
+  test-network:
     driver: bridge

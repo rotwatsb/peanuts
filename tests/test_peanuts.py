@@ -12,5 +12,5 @@ def app():
 @pytest.mark.usefixtures('live_server')
 class TestLiveServer:
     def test_rpc_connection(self):
-        res = urlopen(url_for('hello', _external=True))
+        res = urlopen(url_for('get_best_block', _external=True))
         assert res.code == 200

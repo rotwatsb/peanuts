@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export RPC_CLIENT_HOST=peanuts-app
+export ENV=testing
+export RPC_CLIENT_HOST=btcwrapp
 export RPC_USER=rpcuser
 export RPC_PASSWORD=rpcpw
 
