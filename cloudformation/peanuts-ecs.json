@@ -179,8 +179,8 @@
                         "ReadonlyRootFilesystem" : false,
                         "Environment" : [
                             {
-                                "Name" : "FLASK_APP",
-                                "Value" : "peanuts"
+                                "Name" : "ENV",
+                                "Value" : "production"
                             }
                         ],
                         "Secrets" : [
