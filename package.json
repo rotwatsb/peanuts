@@ -29,5 +29,8 @@
         "react-dom": "^16.9.0",
         "webpack": "^4.40.2",
         "webpack-cli": "^3.3.9"
+    },
+    "dependencies": {
+        "expose-loader": "^0.7.5"
     }
 }
