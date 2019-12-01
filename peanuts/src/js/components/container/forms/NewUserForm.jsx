@@ -8,7 +8,7 @@ class _NewUserForm extends React.Component {
 
     render() {
         return (
-            <form method="POST" action="/user" onSubmit={this.props.handleSubmit}>
+            <form id={this.props.formId} method='POST' action='/user' onSubmit={this.props.handleSubmit}>
                 <div className="form-group">
                     <label htmlFor="new-user-name">Name</label>
                     <input
