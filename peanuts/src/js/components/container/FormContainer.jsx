@@ -1,41 +1,26 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import Input from '../presentational/Input.jsx';
+import React from 'react';
 
-class FormContainer extends Component {
-    constructor() {
-        super();
+const withForm = (FormComponent) => {
+    return class FormContainer extends React.Component {
+        constructor(props) {
+            super(props);
 
-        this.state = {
-            title: ''
-        };
+            this.handleSubmit = this.handleSubmit.bind(this);
+        }
 
-        this.handleChange = this.handleChange.bind(this);
-    }
+        handleSubmit(submitEvent) {
+            console.log(submitEvent);
+            submitEvent.preventDefault();
+            console.log('****************************************************************');
+            console.log('submit!');
+        }
 
-    handleChange(event) {
-        this.setState({ [event.target.id]: event.target.value });
-    }
-
-    render() {
-        const { title } = this.state;
-
-        return (
-            <form id='article-form'>
-                <Input
-                    text='title'
-                    label='title'
-                    type='text'
-                    id='title'
-                    value={title}
-                    handleChange={this.handleChange}
-                />
-            </form>
-        );
+        render() {
+            return (
+                <FormComponent {...this.props} handleSubmit={this.handleSubmit}/>
+            );
+        }
     }
 }
 
-export default FormContainer;
-
-const container = document.getElementById('create-form');
-container ? ReactDOM.render(<FormContainer />, container) : false;
+export default withForm;

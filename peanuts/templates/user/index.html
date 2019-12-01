@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Create a user{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div id="new-user-form"></div>
+{% endblock %}
+
+{% block footer %}
+<script>
+ComponentLoader.default.inject('NewUserForm', {}, 'new-user-form');
+</script>
+{% endblock %}
