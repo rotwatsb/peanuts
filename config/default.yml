@@ -1,4 +1,8 @@
 port: 5000
-btcwrapp:
-  domain: ""
-  port: 8000
+myce:
+  btcwrapp:
+    domain: ""
+    port: 8000
+  dirt:
+    domain: ""
+    port: 6000
