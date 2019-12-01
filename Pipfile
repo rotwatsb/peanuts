@@ -12,7 +12,7 @@ requests = "*"
 flask = "*"
 waitress = "*"
 config2 = "*"
-myce = {editable = true,git = "git://github.com/rotwatsb/myce",ref = "081ecaa7e63d3d55f1aec3388a7efbede823941f"}
+myce = {editable = true,git = "git://github.com/rotwatsb/myce",ref = "8f8e6f1dd210a3eadb3ea5b2969ea172c4f96087"}
 
 [requires]
 python_version = "3.6"
