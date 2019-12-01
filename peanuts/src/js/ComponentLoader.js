@@ -13,7 +13,6 @@ class ComponentLoader {
 
         if (container) {
             const component = React.createElement(componentMap[componentName], props, null);
-            console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
             ReactDOM.render(component, container);
         }
     }

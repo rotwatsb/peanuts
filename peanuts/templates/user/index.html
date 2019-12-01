@@ -5,11 +5,17 @@
 {% endblock %}
 
 {% block content %}
-<div id="new-user-form"></div>
+<div id="new-user-form-container"></div>
 {% endblock %}
 
 {% block footer %}
 <script>
-ComponentLoader.default.inject('NewUserForm', {}, 'new-user-form');
+ ComponentLoader.default.inject(
+     'NewUserForm',
+     {
+         formId: 'new-user-form'
+     },
+     'new-user-form-container'
+ );
 </script>
 {% endblock %}
