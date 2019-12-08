@@ -1,41 +1,50 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import Input from '../presentational/Input.jsx';
+import React from 'react';
+import serialize from 'form-serialize'
 
-class FormContainer extends Component {
-    constructor() {
-        super();
+const withForm = (FormComponent) => {
+    return class FormContainer extends React.Component {
 
-        this.state = {
-            title: ''
-        };
+        /**
+         * @param {object} props
+         * @param {string} prop.formId
+         */
+        constructor(props) {
+            super(props);
 
-        this.handleChange = this.handleChange.bind(this);
-    }
+            this.handleSubmit = this.handleSubmit.bind(this);
+        }
 
-    handleChange(event) {
-        this.setState({ [event.target.id]: event.target.value });
-    }
+        handleSubmit(submitEvent) {
+            submitEvent.preventDefault();
 
-    render() {
-        const { title } = this.state;
+            const form = document.querySelector(`#${this.props.formId}`);
 
-        return (
-            <form id='article-form'>
-                <Input
-                    text='title'
-                    label='title'
-                    type='text'
-                    id='title'
-                    value={title}
-                    handleChange={this.handleChange}
-                />
-            </form>
-        );
+            const url = form.getAttribute('action');
+
+            const fetchData = {
+                method: form.getAttribute('method'),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+
+            if (fetchData.method === 'POST') {
+                fetchData.body = JSON.stringify(serialize(form, { hash: true }));
+            }
+
+            console.log(fetchData);
+
+            const request = new Request(url, fetchData);
+
+            fetch(request).then(console.log).catch(console.log);
+        }
+
+        render() {
+            return (
+                <FormComponent {...this.props} handleSubmit={this.handleSubmit}/>
+            );
+        }
     }
 }
 
-export default FormContainer;
-
-const container = document.getElementById('create-form');
-container ? ReactDOM.render(<FormContainer />, container) : false;
+export default withForm;

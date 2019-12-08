@@ -16,7 +16,17 @@ module.exports = {
                 use: {
                     loader: "babel-loader"
                 }
+            },
+            {
+                test: /ComponentLoader\.js$/,
+                use: [{
+                    loader: 'expose-loader',
+                    options: 'ComponentLoader'
+                }]
             }
         ]
+    },
+    optimization: {
+        minimize: true
     }
 };

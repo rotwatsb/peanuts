@@ -1,2 +1,5 @@
-btcwrapp:
-  domain: "localhost"
+myce:
+  btcwrapp:
+    domain: "localhost"
+  dirt:
+    domain: "localhost"

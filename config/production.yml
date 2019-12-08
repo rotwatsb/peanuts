@@ -1,2 +1,3 @@
-btcwrapp:
-  domain: "btcwrapp.private-peanuts.net"
+myce:
+  btcwrapp:
+    domain: "btcwrapp.private-peanuts.net"
