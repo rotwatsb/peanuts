@@ -1,3 +1,5 @@
-btcwrapp:
-  domain: "btcwrapp"
-
+myce:
+  btcwrapp:
+    domain: "btcwrapp"
+  dirt:
+    domain: "dirt"
